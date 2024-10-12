@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Saved Teams</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .teams-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .team {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 22%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer; /* Make team divs clickable */
+        }
+        .team h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .character {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .character img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .character p {
+            margin: 0;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1>Saved Teams</h1>
+<div id="teams-container" class="teams-container"></div>
+
+<script th:inline="javascript">
+    // Inject the savedTeams and characters data from Thymeleaf into JavaScript variables
+    const savedTeams = /*[[${savedTeams}]]*/ '[]';
+    const characters = /*[[${characters}]]*/ '[]';
+
+    // Parse the JSON strings into JavaScript objects
+    const parsedSavedTeams = JSON.parse(savedTeams);
+    const parsedCharacters = JSON.parse(characters);
+
+    // Convert the characters array to a map for easy lookup
+    const characterMap = {};
+    parsedCharacters.forEach(character => {
+        characterMap[character.characterId] = character;
+    });
+
+    const teamsContainer = document.getElementById('teams-container');
+
+    parsedSavedTeams.forEach((team, index) => {
+        const teamDiv = document.createElement('div');
+        teamDiv.className = 'team';
+        teamDiv.dataset.teamId = team.team_id; // Add team ID to data attribute
+        console.log(teamDiv.dataset.teamId);
+        const mainDps = characterMap[team.maindpscharacter_id];
+        const sub1 = characterMap[team.subcharacter1];
+        const sub2 = characterMap[team.subcharacter2];
+        const sub3 = characterMap[team.subcharacter3];
+
+        const characters = [
+            { role: 'MainDPS', character: mainDps },
+            { role: 'SubDPS/Support 1', character: sub1 },
+            { role: 'SubDPS/Support 2', character: sub2 },
+            { role: 'SubDPS/Support 3', character: sub3 }
+        ];
+
+        const teamTitle = document.createElement('h2');
+        teamTitle.textContent = `Team ${index + 1}`;
+        teamDiv.appendChild(teamTitle);
+
+        characters.forEach(({ role, character }) => {
+            if (character) {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'character';
+
+                const img = document.createElement('img');
+                img.src = character.photo;
+                img.alt = `${character.name} Photo`;
+
+                const namePara = document.createElement('p');
+                namePara.textContent = `${character.name} (${role})`;
+
+                charDiv.appendChild(img);
+                charDiv.appendChild(namePara);
+                teamDiv.appendChild(charDiv);
+            }
+        });
+
+        // Add click event listener to redirect to show_team.html with the teamId
+        teamDiv.addEventListener('click', () => {
+            const teamId = teamDiv.dataset.teamId; // Get the team ID from the data attribute
+            window.location.href = `http://localhost:8080/api/characters/show_team.html?teamId=${teamId}`;
+        });
+
+        teamsContainer.appendChild(teamDiv);
+    });
+</script>
+</body>
+</html>

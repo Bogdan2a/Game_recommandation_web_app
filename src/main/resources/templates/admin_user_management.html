@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Improved shadow */
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      color: #000; /* Black text */
+    }
+    th {
+      background-color: #f2f2f2;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f2f2f2;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>User Management</h1>
+  <p>Perform CRUD operations for user accounts:</p>
+
+  <table border="1">
+    <tr>
+      <th>User ID</th>
+      <th>Username</th>
+      <th>Role</th>
+    </tr>
+
+    <tr th:each="user : ${users}">
+      <td th:text="${user.user_id}"></td>
+      <td th:text="${user.username}"></td>
+      <td th:text="${user.user_type}"></td>
+    </tr>
+  </table>
+
+  <button onclick="window.location.href='/api/users/create_user.html'">Create User</button>
+  <button onclick="window.location.href='/api/users/update_user.html'">Update User</button>
+  <button onclick="window.location.href='/api/users/delete_user.html'">Delete User</button>
+</div>
+</body>
+</html>

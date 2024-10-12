@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Main DPS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .selection-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .selection-info p {
+            margin-right: 10px;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .selection-info button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+        }
+        .selection-info button:hover {
+            background-color: #0056b3;
+        }
+        .character-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .character {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            text-align: center;
+            width: 180px;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .character img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .character p {
+            margin: 10px 0 0;
+            font-weight: bold;
+            color: #555;
+        }
+        .character:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .character.selected {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Select the character you want your team to be centered around</h1>
+<div class="character-list">
+    <div th:each="character : ${characters}" class="character" th:onclick="|toggleSelect(this)|" th:data-id="${character.characterId}">
+        <img th:src="${character.photo}" alt="Character Photo"/>
+        <p>
+            <span th:text="${character.name}"></span> (<span th:text="${character.characterId}"></span>)
+        </p>
+    </div>
+</div>
+<div class="selection-info">
+    <button onclick="confirmSelection()">Confirm Main DPS</button>
+</div>
+<script>
+    function toggleSelect(element) {
+        const selectedCharacter = document.querySelector('.character.selected');
+        if (selectedCharacter) {
+            selectedCharacter.classList.remove('selected');
+        }
+        element.classList.add('selected');
+    }
+
+    function confirmSelection() {
+        const selectedCharacter = document.querySelector('.character.selected');
+        if (!selectedCharacter) {
+            alert('Please select a character.');
+            return;
+        }
+        const characterId = selectedCharacter.getAttribute('data-id');
+
+        // Send the selected character ID to the backend
+        fetch('/api/characters/confirmMainDPS', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: characterId
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Redirect to the placeholder page
+                window.location.href = '/api/characters/recommended_team.html';
+            })
+            .catch(error => {
+                console.error('Error sending data to backend:', error);
+            });
+    }
+</script>
+</body>
+</html>

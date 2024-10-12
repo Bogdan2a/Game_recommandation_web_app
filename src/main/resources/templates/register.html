@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h2 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        form {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+        }
+        label, button, a {
+            margin: 10px 0;
+        }
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            color: #000; /* Set text color to black */
+        }
+        button {
+            background-color: #ffcc00;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff9900;
+        }
+        a {
+            color: #ffcc00;
+            text-align: center;
+            text-decoration: none;
+            transition: color 0.3s;
+            text-shadow: 1px 1px 2px black;
+        }
+        a:hover {
+            color: #ff9900;
+        }
+        #registrationMessage {
+            color: green;
+            text-align: center;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+</head>
+<body>
+<h2>User Registration</h2>
+<form id="registrationForm" action="/api/users/register" method="post">
+    <label for="username" style="color: black;">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <label for="password" style="color: black;">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <label for="user_type" style="color: black;">Role:</label>
+    <select id="user_type" name="user_type" required>
+        <option value="Normal" selected>User</option>
+    </select>
+    <button type="submit">Register</button>
+</form>
+<p id="registrationMessage"></p>
+<button onclick="window.location.href='/api/users/login.html'">Back to Login</button>
+<script>
+    document.getElementById("registrationForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var formData = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            user_type: document.getElementById("user_type").value
+        };
+
+        fetch("/api/users/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("registrationMessage").textContent = "User registered successfully";
+                } else {
+                    response.text().then(message => {
+                        document.getElementById("registrationMessage").textContent = message;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error registering user:", error);
+                document.getElementById("registrationMessage").textContent = "Failed to register user";
+            });
+    });
+</script>
+</body>
+</html>

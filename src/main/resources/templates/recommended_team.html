@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recommended Team</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .save-button:hover {
+            background-color: #45a049;
+        }
+        .character-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .character {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            text-align: center;
+            width: 180px;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .character img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .character p {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #555;
+        }
+        .character-role {
+            font-style: italic;
+            color: #333;
+        }
+        .element-icon {
+            width: 24px;
+            height: auto;
+            margin-top: 5px;
+        }
+        .gold-star {
+            color: gold;
+            text-shadow: 1px 1px 2px black;
+        }
+        .extra-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .info-block {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            width: 45%;
+        }
+        .info-block h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .info-block p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Recommended Team</h1>
+<button class="save-button" onclick="saveTeam()">Save Team</button>
+<div class="character-list">
+    <div th:each="character : ${characters}" class="character">
+        <img th:src="${character.photo}" alt="Character Photo" style="margin-bottom: 10px;"/>
+        <p>
+            <span th:text="${character.name}"></span> (<span th:text="${character.characterId}"></span>)
+        </p>
+        <p class="character-role" style="margin-bottom: 10px;">
+            <span th:text="${character.role}"></span>
+        </p>
+        <img th:src="${elementIcons[character.element]}" alt="Element Icon" style="width: 50px; height: 50px; margin-bottom: 10px;"/>
+        <p style="margin-bottom: 10px;">
+            <u>Rarity:</u>
+            <span th:if="${character.rarity == '5*'}" class="gold-star">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span th:if="${character.rarity == '4*'}" class="gold-star">&#9733;&#9733;&#9733;&#9733;</span>
+        </p>
+        <p style="margin-bottom: 10px;"><u>Weapon Type:</u> <span th:text="${character.weapon_type}"></span></p>
+        <img th:src="${weaponIcons[character.weapon_type]}" alt="Weapon Icon" style="width: 50px; height: 50px; margin-bottom: 10px;"/>
+        <p style="margin-bottom: 10px;"><u>Recommended Weapon:</u> <span th:text="${character.recommended_weapon}"></span></p>
+        <img th:src="${recommendedWeaponIcons[character.recommended_weapon]}" alt="Recommended Weapon Icon" style="width: 80px; height: 80px; margin-bottom: 10px;"/>
+        <p style="margin-bottom: 10px;"><u>Artifact Set:</u> <span th:text="${character.artifact_set}"></span></p>
+        <img th:src="${artifactSetIcons[character.artifact_set]}" alt="Set Icon" style="width: 60px; height: 60px; margin-bottom: 10px;"/>
+        <p style="margin-bottom: 10px;"><u>Artifact Main Stats:</u></p>
+        <p style="margin-top: 10px; margin-bottom: 10px; text-align: left;">
+            <img th:src="${artifactPieceIcons['Sands']}" alt="Artifact Sands" style="width: 30px; height: 30px; vertical-align: middle;"/>
+            <span th:text="${character.artifact_sands_main_stat}"></span>
+        </p>
+        <p style="margin-bottom: 10px; text-align: left;">
+            <img th:src="${artifactPieceIcons['Goblet']}" alt="Artifact Goblet" style="width: 30px; height: 30px; vertical-align: middle;"/>
+            <span th:text="${character.artifact_goblet_main_stat}"></span>
+        </p>
+        <p style="margin-bottom: 10px; text-align: left;">
+            <img th:src="${artifactPieceIcons['Circlet']}" alt="Artifact Circlet" style="width: 30px; height: 30px; vertical-align: middle;"/>
+            <span th:text="${character.artifact_circlet_main_stat}"></span>
+        </p>
+    </div>
+</div>
+<div class="extra-info">
+    <div class="info-block">
+        <h2><u>Active Team Resonances</u></h2>
+        <div th:each="resonance : ${resonances}">
+            <p><strong th:text="${resonance.name}"></strong>: <span th:text="${resonance.description}"></span></p>
+        </div>
+    </div>
+    <div class="info-block">
+        <h2><u>Possible Team Reactions</u></h2>
+        <div th:each="reaction : ${reactions}">
+            <p><strong th:text="${reaction.name}"></strong>: <span th:text="${reaction.description}"></span></p>
+        </div>
+    </div>
+</div>
+<script>
+    function saveTeam() {
+        // Fetch call to save the current team
+        fetch('/api/userteams/saveCurrentTeam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: 'characterId'  // Replace with the actual characterId if needed
+        }).then(response => {
+            // Redirect to the saved teams page after saving the team
+            window.location.href = 'http://localhost:8080/api/userteams/saved_teams.html';
+        }).catch(error => {
+            console.error('Error saving the team:', error);
+        });
+    }
+</script>
+</body>
+</html>

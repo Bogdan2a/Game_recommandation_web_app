@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Character List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        .selection-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .selection-info p {
+            margin-right: 10px;
+            color: #fff; /* Changed text color to white */
+            font-weight: bold; /* Added font weight */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Added text shadow */
+        }
+        .selection-info button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+        }
+        .selection-info button:hover {
+            background-color: #0056b3;
+        }
+        .character-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .character {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            text-align: center;
+            width: 180px;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .character img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .character p {
+            margin: 10px 0 0;
+            font-weight: bold;
+            color: #555;
+        }
+        .character:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .character.selected {
+            background-color: green;
+            color: white;
+        }
+        .element-icon {
+            width: 3px; /* Adjust size as needed */
+            height: auto;
+            margin-left: 5px;
+        }
+
+        #scrollToTopBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+        }
+        #scrollToTopBtn:hover {
+            background-color: #0056b3;
+        }
+        #scrollToTopBtn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+<h1>Character List</h1>
+<div class="selection-info">
+    <p style="color: white; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">Select at least 1 MainDPS and at least 3 other characters</p>
+    <button onclick="selectOwnedCharacters()">Confirm Owned Characters</button>
+</div>
+<div class="character-list">
+    <div th:each="character : ${characters}" class="character" th:onclick="|toggleSelect(this)|" th:data-id="${character.characterId}">
+        <img th:src="${character.photo}" alt="Character Photo"/>
+        <p>
+            <span th:text="${character.name}"></span> (<span th:text="${character.characterId}"></span>)
+        </p>
+        <p class="character-role">
+            <span th:text="${character.role}"></span>
+        </p>
+        <img th:src="${elementIcons[character.element]}" alt="Element Icon" style="width: 50px; height: 50px;"/>
+    </div>
+</div>
+<button id="scrollToTopBtn" onclick="scrollToTop()">↑</button>
+<script>
+    function toggleSelect(element) {
+        const isSelected = element.classList.contains('selected');
+        const characterId = element.getAttribute('data-id');
+        if (isSelected) {
+            element.classList.remove('selected');
+            console.log("Unselected character ID:", characterId);
+        } else {
+            element.classList.add('selected');
+            console.log("Selected character ID:", characterId);
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.onscroll = function() {
+        var btn = document.getElementById("scrollToTopBtn");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            btn.style.display = "block";
+        } else {
+            btn.style.display = "none";
+        }
+    };
+
+    // Hide button initially
+    document.getElementById("scrollToTopBtn").style.display = "none";
+
+    function selectOwnedCharacters() {
+        const selectedCharacters = document.querySelectorAll('.character.selected');
+        const characterIds = Array.from(selectedCharacters).map(character => character.getAttribute('data-id'));
+        const characterIdsString = characterIds.join(', ');
+        console.log(characterIdsString);
+
+        // Send the selected character IDs to the backend
+        fetch('/api/characters/processSelectedCharacters', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: characterIdsString
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                // Redirect to selectMainDPS.html
+                window.location.href = '/api/characters/selectMainDPS.html';
+            })
+            .catch(error => {
+                console.error('Error sending data to backend:', error);
+            });
+    }
+</script>
+</body>
+</html>

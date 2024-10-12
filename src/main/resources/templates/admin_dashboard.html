@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Administrator Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('https://www.teyvatavern.com/cdn/shop/files/605027-genshinimpact.jpg?v=1679465555&width=3840');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Black contour */
+    }
+    #greetingMessage {
+      text-align: center;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Black contour */
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    li a {
+      display: block;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      color: #333;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Black contour */
+    }
+    li a:hover {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Welcome to Administrator Dashboard</h1>
+  <p id="greetingMessage"></p>
+  <ul>
+    <li><a href='/api/users/admin_user_management.html'>User Management</a></li>
+    <li><a href='/api/characters/characters.html'>Build Team</a></li>
+    <li><a href='/api/userteams/saved_teams.html'>View Your Saved Teams</a></li>
+    <li><a href='/api/users/update_account.html' id="updateAccountLink">Update Account Information</a></li>
+  </ul>
+</div>
+<script>
+  var urlParams = new URLSearchParams(window.location.search);
+  var userId = urlParams.get('userId');
+
+  fetch("/api/users/get_user_by_id/" + userId)
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Failed to fetch user details');
+            }
+          })
+          .then(user => {
+            document.getElementById("greetingMessage").textContent = "Greetings, " + user.username + "!";
+          })
+          .catch(error => {
+            console.error("Error fetching user details:", error);
+            document.getElementById("greetingMessage").textContent = "Failed to fetch user details";
+          });
+
+  document.getElementById("updateAccountLink").addEventListener("click", function(event) {
+    event.preventDefault();
+    var updateAccountUrl = '/api/users/update_account.html?userId=' + userId;
+    window.location.href = updateAccountUrl;
+  });
+</script>
+</body>
+</html>
